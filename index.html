@@ -1,1 +1,584 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Houston Radiology Associated | IDR Performance Analysis 2023-2024</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: #f9f9f9;
+            color: #333333;
+            line-height: 1.6;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+        }
+        
+        .header {
+            border-bottom: 4px solid #1a1a1a;
+            padding: 60px 60px 40px 60px;
+            background: white;
+        }
+        
+        .header h1 {
+            font-size: 2.8em;
+            font-weight: 400;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+        
+        .header .subtitle {
+            font-size: 1.1em;
+            color: #666666;
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+        
+        .header .meta {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .meta-item .label {
+            font-size: 0.75em;
+            color: #666666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        .meta-item .value {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border-bottom: 1px solid #e0e0e0;
+            background: #fafafa;
+        }
+        
+        .stat-card {
+            padding: 30px;
+            border-right: 1px solid #e0e0e0;
+        }
+        
+        .stat-card:last-child {
+            border-right: none;
+        }
+        
+        .stat-card .stat-label {
+            font-size: 0.75em;
+            color: #666666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 2.5em;
+            font-weight: 300;
+            margin-bottom: 5px;
+            color: #1a1a1a;
+        }
+        
+        .stat-card .stat-change {
+            font-size: 0.85em;
+            color: #666666;
+        }
+        
+        .content {
+            padding: 60px;
+        }
+        
+        .section {
+            margin-bottom: 60px;
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            font-weight: 400;
+            margin-bottom: 30px;
+            color: #1a1a1a;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #1a1a1a;
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-caption {
+            font-size: 0.9em;
+            color: #666666;
+            font-style: italic;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+        
+        .insights {
+            background: #fafafa;
+            padding: 40px;
+            border-left: 3px solid #1a1a1a;
+        }
+        
+        .insight-item {
+            margin-bottom: 30px;
+        }
+        
+        .insight-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .insight-item h3 {
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+        
+        .insight-item p {
+            color: #333333;
+            line-height: 1.7;
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 30px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95em;
+        }
+        
+        thead {
+            background: #1a1a1a;
+            color: white;
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 40px;
+            background: #1a1a1a;
+            color: #999999;
+            font-size: 0.85em;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        @media (max-width: 968px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .stat-card {
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+            
+            .header {
+                padding: 40px 30px 30px 30px;
+            }
+            
+            .content {
+                padding: 40px 30px;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .chart-wrapper {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Houston Radiology Associated</h1>
+            <div class="subtitle">IDR Performance Analysis, 2023-2024</div>
+            <div class="meta">
+                <div class="meta-item">
+                    <span class="label">Organization Type</span>
+                    <span class="value">Physician-Owned</span>
+                </div>
+                <div class="meta-item">
+                    <span class="label">National Ranking</span>
+                    <span class="value">#13</span>
+                </div>
+                <div class="meta-item">
+                    <span class="label">Classification</span>
+                    <span class="value">Category 4</span>
+                </div>
+                <div class="meta-item">
+                    <span class="label">Study Period</span>
+                    <span class="value">8 Quarters</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Disputes</div>
+                <div class="stat-value">48,680</div>
+                <div class="stat-change">2.0% of national total</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-label">Win Rate</div>
+                <div class="stat-value">93.9%</div>
+                <div class="stat-change">46,000 favorable outcomes</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-label">Payment Award</div>
+                <div class="stat-value">105%</div>
+                <div class="stat-change">of QPA when winning</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-label">Volume Growth</div>
+                <div class="stat-value">100.6×</div>
+                <div class="stat-change">Q1 2023 to Q4 2024</div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2 class="section-title">Quarterly Dispute Volume</h2>
+                <div class="chart-wrapper">
+                    <canvas id="volumeChart"></canvas>
+                </div>
+                <p class="chart-caption">Disputes filed surged from 149 in Q1 2023 to 14,986 in Q4 2024, representing a 100.6× increase over eight quarters. The sharp acceleration beginning in Q4 2023 suggests a strategic shift toward systematic out-of-network billing.</p>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">Market Share Evolution</h2>
+                <div class="chart-wrapper">
+                    <canvas id="marketShareChart"></canvas>
+                </div>
+                <p class="chart-caption">HRA's share of total IDR market peaked at 5.0% in Q4 2023 before declining to 1.6% by Q4 2024, despite continued absolute volume growth. This indicates the overall IDR market is expanding faster than HRA's already-rapid growth trajectory.</p>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">Arbitration Win Rates</h2>
+                <div class="chart-wrapper">
+                    <canvas id="winRateChart"></canvas>
+                </div>
+                <p class="chart-caption">Win rates remained exceptionally high throughout the study period, ranging from 82.6% to 99.6%. The weighted average win rate of 93.9% suggests HRA's documentation and subspecialty expertise arguments are highly persuasive to arbitrators.</p>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">Payment Outcomes</h2>
+                <div class="chart-wrapper">
+                    <canvas id="paymentChart"></canvas>
+                </div>
+                <p class="chart-caption">When prevailing in arbitration, HRA receives payment at approximately 105% of the Qualified Payment Amount—a consistent 5% premium across all quarters. This modest premium suggests HRA's billed rates align closely with what arbitrators consider fair market value.</p>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">Quarterly Performance Summary</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Quarter</th>
+                                <th>Disputes Filed</th>
+                                <th>Market Share</th>
+                                <th>Win Rate</th>
+                                <th>Avg Payment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2023 Q1</td>
+                                <td>149</td>
+                                <td>0.2%</td>
+                                <td>82.6%</td>
+                                <td>104.5% of QPA</td>
+                            </tr>
+                            <tr>
+                                <td>2023 Q2</td>
+                                <td>961</td>
+                                <td>0.8%</td>
+                                <td>94.6%</td>
+                                <td>105.1% of QPA</td>
+                            </tr>
+                            <tr>
+                                <td>2023 Q3</td>
+                                <td>204</td>
+                                <td>0.3%</td>
+                                <td>98.5%</td>
+                                <td>105.3% of QPA</td>
+                            </tr>
+                            <tr>
+                                <td>2023 Q4</td>
+                                <td>4,010</td>
+                                <td>5.0%</td>
+                                <td>99.6%</td>
+                                <td>105.2% of QPA</td>
+                            </tr>
+                            <tr>
+                                <td>2024 Q1</td>
+                                <td>4,240</td>
+                                <td>2.2%</td>
+                                <td>97.7%</td>
+                                <td>105.4% of QPA</td>
+                            </tr>
+                            <tr>
+                                <td>2024 Q2</td>
+                                <td>10,420</td>
+                                <td>2.7%</td>
+                                <td>94.0%</td>
+                                <td>105.1% of QPA</td>
+                            </tr>
+                            <tr>
+                                <td>2024 Q3</td>
+                                <td>13,710</td>
+                                <td>2.0%</td>
+                                <td>88.9%</td>
+                                <td>105.1% of QPA</td>
+                            </tr>
+                            <tr>
+                                <td>2024 Q4</td>
+                                <td>14,986</td>
+                                <td>1.6%</td>
+                                <td>94.9%</td>
+                                <td>104.9% of QPA</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="insights">
+                <h2 class="section-title">Key Findings</h2>
+                
+                <div class="insight-item">
+                    <h3>Volume Acceleration</h3>
+                    <p>The 100.6× increase in dispute volume from Q1 2023 to Q4 2024 represents one of the most dramatic growth patterns observed in the dataset. This suggests a fundamental strategic shift toward out-of-network billing, potentially driven by contract terminations with major insurers or changes in the Houston Methodist system's payer relationships.</p>
+                </div>
+                
+                <div class="insight-item">
+                    <h3>Arbitration Success</h3>
+                    <p>HRA's 93.9% overall win rate—prevailing in approximately 46,000 of 48,680 disputes—substantially exceeds typical arbitration outcomes. This performance suggests that HRA's documentation, subspecialty expertise credentials, and association with Houston Methodist's premier academic medical center provide strong justification for rates above the Qualified Payment Amount.</p>
+                </div>
+                
+                <div class="insight-item">
+                    <h3>Modest Premium Structure</h3>
+                    <p>The consistent 5% premium above QPA stands in marked contrast to out-of-network providers seeking 200-300% premiums. This moderation suggests either that HRA's billed rates are close to what arbitrators consider fair market value for subspecialist radiology services, or that the competitive dynamics of the Houston market constrain pricing power despite HRA's exclusive provider status.</p>
+                </div>
+                
+                <div class="insight-item">
+                    <h3>Market Context</h3>
+                    <p>HRA's declining market share (from 5.0% to 1.6%) despite absolute volume growth indicates that the overall IDR market experienced even more rapid expansion in 2024. This suggests an industry-wide trend toward out-of-network strategies and systematic IDR utilization, raising questions about the sustainability of the No Surprises Act's arbitration mechanism.</p>
+                </div>
+                
+                <div class="insight-item">
+                    <h3>Policy Implications</h3>
+                    <p>The data demonstrates that physician ownership does not inherently prevent high-volume IDR utilization. HRA, an independent practice since 1943, exhibits billing patterns comparable to private-equity-backed competitors. This suggests that financial incentives and market position—rather than ownership structure—are the primary drivers of out-of-network strategy, pointing toward the need for payment methodology reform rather than ownership-focused regulation.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Houston Radiology Associated | Physician-Owned Independent Practice</p>
+            <p>Data Period: 2023 Q1 - 2024 Q4 | Classification: Category 4 (Private Non-PE / Physician Owned)</p>
+        </div>
+    </div>
+    
+    <script>
+        Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+        Chart.defaults.font.size = 12;
+        Chart.defaults.color = '#666666';
+        
+        const quarters = ['2023 Q1', '2023 Q2', '2023 Q3', '2023 Q4', '2024 Q1', '2024 Q2', '2024 Q3', '2024 Q4'];
+        const disputes = [149, 961, 204, 4010, 4240, 10420, 13710, 14986];
+        const marketShare = [0.2, 0.8, 0.3, 5.0, 2.2, 2.7, 2.0, 1.6];
+        const winRate = [82.6, 94.6, 98.5, 99.6, 97.7, 94.0, 88.9, 94.9];
+        const payment = [4.5, 5.1, 5.3, 5.2, 5.4, 5.1, 5.1, 4.9];
+        
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#e0e0e0',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: '#666666'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false,
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: '#666666'
+                    }
+                }
+            }
+        };
+        
+        new Chart(document.getElementById('volumeChart'), {
+            type: 'bar',
+            data: {
+                labels: quarters,
+                datasets: [{
+                    label: 'Disputes Filed',
+                    data: disputes,
+                    backgroundColor: '#2e4057',
+                    borderColor: '#1a1a1a',
+                    borderWidth: 0
+                }]
+            },
+            options: commonOptions
+        });
+        
+        new Chart(document.getElementById('marketShareChart'), {
+            type: 'line',
+            data: {
+                labels: quarters,
+                datasets: [{
+                    label: '% of Total Market',
+                    data: marketShare,
+                    backgroundColor: 'rgba(46, 64, 87, 0.1)',
+                    borderColor: '#2e4057',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.2,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#2e4057'
+                }]
+            },
+            options: commonOptions
+        });
+        
+        new Chart(document.getElementById('winRateChart'), {
+            type: 'line',
+            data: {
+                labels: quarters,
+                datasets: [{
+                    label: 'Win Rate (%)',
+                    data: winRate,
+                    backgroundColor: 'rgba(46, 64, 87, 0.1)',
+                    borderColor: '#2e4057',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.2,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#2e4057'
+                }]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    y: {
+                        ...commonOptions.scales.y,
+                        min: 75,
+                        max: 100
+                    },
+                    x: commonOptions.scales.x
+                }
+            }
+        });
+        
+        new Chart(document.getElementById('paymentChart'), {
+            type: 'line',
+            data: {
+                labels: quarters,
+                datasets: [{
+                    label: '% Above QPA',
+                    data: payment,
+                    backgroundColor: 'rgba(46, 64, 87, 0.1)',
+                    borderColor: '#2e4057',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.2,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#2e4057'
+                }]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    y: {
+                        ...commonOptions.scales.y,
+                        min: 4,
+                        max: 6
+                    },
+                    x: commonOptions.scales.x
+                }
+            }
+        });
+    </script>
+</body>
+</html>
